@@ -1,5 +1,7 @@
-//store user input from radio button selection
 
+$( document ).ready(function() {
+    reset();
+});
 
 //create trivia questions 
 var triviaContent = {
@@ -36,21 +38,33 @@ var triviaContent = {
     }
 };
 
-//listen for button click 
+var answerKey = [
+    triviaContent.questionOne.options[0], 
+    triviaContent.questionTwo.options[1],
+    triviaContent.questionThree.options[0],
+    triviaContent.questionFour.options[0],
+    triviaContent.questionFive.options[0],
+    triviaContent.questionSix.options[0],
+    triviaContent.questionSeven.options[0],
+    triviaContent.questionEight.options[0],
+    triviaContent.questionNine.options[0],
+];
+
+var counter;
+
+//listen for button click to display questions
 $(".btn.btn-primary").on("click", function() {
     handleQuestionContent();
+    runTimer ();
 })
 
-//$("#to-question-2").on("click", handleQuestionTwo());
 
-//create a next button on the initial questions screen
 
-//create a function to move to the next question
-
- function handleQuestionContent () 
-    {$(".card-body").html ( '<strong>' +
+ function handleQuestionContent () {
+    $("#startgame").hide();
+    $("#description").html ('<strong>' +
     triviaContent.questionOne.text + '</strong>' +
-    '<p> <p> <input type="radio" name="selected1">' + triviaContent.questionOne.options[0] + '</input>' + '<br> <input type="radio" name="selected1">' + triviaContent.questionOne.options[1] + '</input>' + '<br> <input type="radio" name="selected1" id="answer1">' + triviaContent.questionOne.options[2] + '</input>' + '<br> <input type="radio" name="selected1">' + triviaContent.questionOne.options[3] + '</input>' + 
+    '<p> <p> <input type="radio" name="selected1" value="' + triviaContent.questionOne.options[0] + '">' + triviaContent.questionOne.options[0] + '</input>' + '<br> <input type="radio" name="selected1">' + triviaContent.questionOne.options[1] + '</input>' + '<br> <input type="radio" name="selected1" id="answer1">' + triviaContent.questionOne.options[2] + '</input>' + '<br> <input type="radio" name="selected1">' + triviaContent.questionOne.options[3] + '</input>' + 
         '<p> <strong>' +
         triviaContent.questionTwo.text + '</strong>' +
         '<p> <p> <input type="radio"name="selected2">' + triviaContent.questionTwo.options[0] + '</input>' + '<br> <input type="radio" name="selected2" id="answer2">' + triviaContent.questionTwo.options[1] + '</input>' + '<br> <input type="radio" name="selected2">' + triviaContent.questionTwo.options[2] + '</input>' + '<br> <input type="radio" name="selected2">' + triviaContent.questionTwo.options[3] + '</input>' + '<p> <strong>' +
@@ -67,16 +81,73 @@ $(".btn.btn-primary").on("click", function() {
                                             triviaContent.questionEight.text + '</strong>' +
                                             '<p> <p> <input type="radio" name="selected8" id="answer8">' + triviaContent.questionEight.options[0] + '</input>' + '<br> <input type="radio" name="selected8">' + triviaContent.questionEight.options[1] + '</input>' + '<br> <input type="radio" name="selected8">' + triviaContent.questionEight.options[2] + '</input>' + '<br> <input type="radio" name="selected8">' + triviaContent.questionEight.options[3] + '</input>'  + '<p> <strong>' +
                                                     triviaContent.questionNine.text + '</strong>' +
-                                                    '<p> <p> <input type="radio" name="selected9">' + triviaContent.questionNine.options[0] + '</input>' + '<br> <input type="radio" name="selected9">' + triviaContent.questionNine.options[1] + '</input>' + '<br> <input type="radio" name="selected9">' + triviaContent.questionNine.options[2] + '</input>' + '<br> <input type="radio" name="selected9" id="answer9">' + triviaContent.questionNine.options[3] + '</input>' /*+ '<p> <strong>' +
-    triviaContent.questionTen.text + '</strong>' +
-    '<p> <p> <input type="radio">' + triviaContent.questionTen.options[0] + '</input>' + '<br> <input type="radio">' + triviaContent.questionTen.options[1] + '</input>' + '<br> <input type="radio">' + triviaContent.questionTen.options[2] + '</input>' + '<br> <input type="radio">' + triviaContent.questionTen.options[3] + '</input>'*/    
+                                                    '<p> <p> <input type="radio" name="selected9">' + triviaContent.questionNine.options[0] + '</input>' + '<br> <input type="radio" name="selected9">' + triviaContent.questionNine.options[1] + '</input>' + '<br> <input type="radio" name="selected9">' + triviaContent.questionNine.options[2] + '</input>' + '<br> <input type="radio" name="selected9" id="answer9">' + triviaContent.questionNine.options[3] + '</input>' + '<br> <button type="button" onclick="updateResults()" class="btn btn-primary" id="submit">' + "Submit" + '</button>'
+
+                                                    
+                                                    /*+ '<p> <strong>' +
+                                                    triviaContent.questionTen.text + '</strong>' +
+                                                    '<p> <p> <input type="radio">' + triviaContent.questionTen.options[0] + '</input>' + '<br> <input type="radio">' + triviaContent.questionTen.options[1] + '</input>' + '<br> <input type="radio">' + triviaContent.questionTen.options[2] + '</input>' + '<br> <input type="radio">' + triviaContent.questionTen.options[3] + '</input>'*/    
 
     );
 
- }
+ };
 
-//replace current HTMl with trivia questions content
 
-//allow user to only select one answer 
+function updateResults () {
+    var correctAnswers = compareAnswers();
+    var incorrectGuesses = 9-correctAnswers;
+    clearInterval(counter);
+    $("#description").html ('<strong>' + "Correct : " + correctAnswers + '</strong>' + '<p>' + '<strong>' + "Incorrect : " + incorrectGuesses + '</strong>')
+    $("#startgame").show();
+};
 
-//display correct and incorrect answers
+function reset () {
+    console.log ("blahblah")
+    $("#startgame").show();
+    $("#description").text ("You have one minute to answer nine questions! Press the start button below to begin the quiz and set the timer.")
+};
+
+function compareAnswers () {
+    var userGuesses = []
+    userGuesses.push ($("input[type=radio][name=selected1]:checked").val())
+    userGuesses.push ($("input[type=radio][name=selected2]:checked").val())
+    userGuesses.push ($("input[type=radio][name=selected3]:checked").val())
+    userGuesses.push ($("input[type=radio][name=selected4]:checked").val())
+    userGuesses.push ($("input[type=radio][name=selected5]:checked").val())
+    userGuesses.push ($("input[type=radio][name=selected6]:checked").val())
+    userGuesses.push ($("input[type=radio][name=selected7]:checked").val())
+    userGuesses.push ($("input[type=radio][name=selected8]:checked").val())
+    userGuesses.push ($("input[type=radio][name=selected9]:checked").val())
+    var correct = 0;
+    for (i=0; i<answerKey.length; i++) {
+        if (answerKey[i] == userGuesses[i]) {
+            correct++;
+        }
+    }
+    return correct;
+};
+
+
+//create the timer function
+function runTimer () {
+    var count=60;
+    $("#timer").html ('<strong>' + count + '</strong>')    
+    counter=setInterval(timer, 1000); //1000 will  run it every 60 seconds
+    function timer()
+    {
+      count=count-1;
+      $("#timer").html ('<strong>' + count + '</strong>')    
+      if (count <= 0)
+      {
+         clearInterval(counter);
+         alert ("Time's Up!");
+         reset ();
+      }
+    
+    }
+    
+}
+
+
+
+
